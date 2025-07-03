@@ -1,0 +1,16 @@
+-- Start the server with: java -cp h2-2.3.232.jar org.h2.tools.Server -ifNotExists
+
+CREATE TABLE CONTACT (
+                      ID INTEGER AUTO_INCREMENT PRIMARY KEY,
+                      NAME VARCHAR(50),
+                      PHONENR VARCHAR(50),
+                      EMAIL VARCHAR(50),
+                      PRIMARY KEY (id)
+);
+INSERT INTO CONTACT (NAME, PHONENR, EMAIL) VALUES ('John Doe', '+1-234-567-8910', 'jdoe@gmail.com');
+INSERT INTO CONTACT (NAME, PHONENR, EMAIL) VALUES ('Erika Musterfrau', '+43-664-1413121', 'e.musterfrau@htl-leonding.ac.at');
+INSERT INTO CONTACT (NAME, PHONENR, EMAIL) VALUES ('Otto Normalverbraucher', '+43-681-86427531', 'normalotto@mail.at');
+INSERT INTO CONTACT (NAME, PHONENR, EMAIL) VALUES ('Sally Sixpack', '', 'sally@sixpack.com');
+INSERT INTO CONTACT (NAME, PHONENR, EMAIL) VALUES ('Max Mustermann', '+43-650-78563412', 'mustermax@gmail.com');
+
+SELECT * FROM CONTACT

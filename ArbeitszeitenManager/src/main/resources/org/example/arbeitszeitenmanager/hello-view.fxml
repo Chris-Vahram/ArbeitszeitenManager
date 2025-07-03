@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.example.arbeitszeitenmanager.HelloController" spacing="10">
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+
+
+    <HBox spacing="10">
+        <Label text="Woche wählen:"/>
+        <ComboBox fx:id="comboWeeks" prefWidth="150"/>
+        <Label text="Zeitausgleich:"/>
+        <Label fx:id="lblZeitausgleich" style="-fx-font-weight: bold"/>
+    </HBox>
+
+    <TableView fx:id="tableWorkDays" prefHeight="400" prefWidth="680">
+        <columns>
+            <TableColumn fx:id="colDatum" text="Datum" prefWidth="120"/>
+            <TableColumn fx:id="colStart" text="Startzeit (HH:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colEnd" text="Endzeit (HH:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colIstZeit" text="Istzeit (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colSollZeit" text="Sollzeit (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colRestzeit" text="Restzeit heute (h:mm)" prefWidth="120"/>
+        </columns>
+    </TableView>
+
+    <Label text="Hinweis: Start- und Endzeiten eingeben, Tabelle berechnet Restzeiten und Zeitausgleich automatisch." wrapText="true"/>
+
+</VBox>
