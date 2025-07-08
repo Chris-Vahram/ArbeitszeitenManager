@@ -2,6 +2,7 @@ package org.example.arbeitszeitenmanager;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
@@ -24,7 +25,9 @@ public class HelloController {
     private TableView<WorkDay> tableWorkDays;
 
     @FXML
-    private TableColumn<WorkDay, String> colDatum, colStart, colEnd, colIstZeit, colSollZeit, colRestzeit;
+    private TableColumn<WorkDay, String> colDatum, colStart, colEnd, colNotes, colIstZeit, colSollZeit, colRestzeit, colSaldo, colSollEndzeit;
+    @FXML
+    private Button resetButton;
 
     @FXML
     private Label lblZeitausgleich;
@@ -120,9 +123,42 @@ public class HelloController {
             } catch (Exception ignored) {}
         });
 
+        colNotes.setCellValueFactory(cdf -> cdf.getValue().notesProperty());
+        colNotes.setCellFactory(tc -> new EditingCell());
+        colNotes.setOnEditCommit(e -> {
+            WorkDay wd = e.getRowValue();
+            wd.setNotes(e.getNewValue());
+            try {
+                dao.save(wd);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
+
         colSollZeit.setCellValueFactory(cdf -> new SimpleStringProperty(formatDuration(cdf.getValue().getSollZeit())));
         colIstZeit.setCellValueFactory(cdf -> new SimpleStringProperty(formatDuration(cdf.getValue().getIstZeit())));
         colRestzeit.setCellValueFactory(cdf -> new SimpleStringProperty(formatDuration(cdf.getValue().getRestzeitHeute())));
+        colSaldo.setCellValueFactory(cdf -> {
+            Duration ist = cdf.getValue().getIstZeit();
+            Duration rest = cdf.getValue().getRestzeitHeute();
+            Duration saldo;
+            if (!rest.isZero()) {
+                saldo = ist.minus(rest);
+            } else {
+                saldo = ist.minus(cdf.getValue().getSollZeit());
+            }
+            return new SimpleStringProperty(formatSignedDuration(saldo));
+        });
+
+        colSollEndzeit.setCellValueFactory(cdf -> {
+            LocalTime startTime = cdf.getValue().getStart();
+            Duration rest = cdf.getValue().getRestzeitHeute();
+            LocalTime sollEnde = null;
+            if (startTime != null && rest != null && !rest.isZero() && cdf.getValue().getEnd_time() == null) {
+                sollEnde = startTime.plusMinutes(rest.toMinutes());
+            }
+            return new SimpleStringProperty(sollEnde != null ? sollEnde.format(timeFormatter) : "");
+        });
 
         tableWorkDays.setItems(filteredWorkDays);
         tableWorkDays.setEditable(true);
@@ -159,7 +195,7 @@ public class HelloController {
             sumIst = sumIst.plus(wd.getIstZeit());
         }
 
-        Duration delta = sumSoll.minus(sumIst); // Was noch fehlt
+        Duration delta = sumSoll.minus(sumIst); // Was noch fehlt insgesamt
         long verbleibendeTage = filteredWorkDays.stream()
                 .filter(wd -> wd.getIstZeit().isZero())
                 .count();
@@ -170,13 +206,16 @@ public class HelloController {
             if (wd.getIstZeit().isZero()) {
                 wd.setRestzeitHeute(aufteilen);
             } else {
-                wd.setRestzeitHeute(wd.getSollZeit().minus(wd.getIstZeit()));
+                // Wenn schon Zeiten eingetragen sind, wird Restzeit auf 0 gesetzt,
+                // weil für diesen Tag ist die Zeit schon „erledigt“
+                wd.setRestzeitHeute(Duration.ZERO);
             }
         }
 
         lblZeitausgleich.setText(formatSignedDuration(sumIst.minus(sumSoll)));
         tableWorkDays.refresh();
     }
+
 
     private String formatDuration(Duration d) {
         long totalMinutes = d.toMinutes();
@@ -189,6 +228,22 @@ public class HelloController {
         long absMin = Math.abs(totalMinutes);
         return sign + String.format("%d:%02d", absMin / 60, absMin % 60);
     }
+
+    @FXML
+    private void onResetClicked() throws SQLException {
+        WorkDay selected = tableWorkDays.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            selected.setStart(null);
+            selected.setEnd_time(null);
+
+            // Optional: auch Notes resetten
+            // selected.setNotes(null);
+
+            tableWorkDays.refresh(); // wichtig!
+            dao.save(selected); // direkt speichern (falls du das willst)
+        }
+    }
+
 
     private static class EditingCell extends TableCell<WorkDay, String> {
         private final TextField textField = new TextField();

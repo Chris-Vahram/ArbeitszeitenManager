@@ -17,6 +17,7 @@
         <ComboBox fx:id="comboWeeks" prefWidth="150"/>
         <Label text="Zeitausgleich:"/>
         <Label fx:id="lblZeitausgleich" style="-fx-font-weight: bold"/>
+        <Button fx:id="resetButton" text="Reset Zeiteintrag" onAction="#onResetClicked" />
     </HBox>
 
     <TableView fx:id="tableWorkDays" prefHeight="400" prefWidth="680">
@@ -24,9 +25,13 @@
             <TableColumn fx:id="colDatum" text="Datum" prefWidth="120"/>
             <TableColumn fx:id="colStart" text="Startzeit (HH:mm)" prefWidth="120"/>
             <TableColumn fx:id="colEnd" text="Endzeit (HH:mm)" prefWidth="120"/>
-            <TableColumn fx:id="colIstZeit" text="Istzeit (h:mm)" prefWidth="120"/>
-            <TableColumn fx:id="colSollZeit" text="Sollzeit (h:mm)" prefWidth="120"/>
             <TableColumn fx:id="colRestzeit" text="Restzeit heute (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colSollEndzeit" text="Soll-Endzeit" prefWidth="120"/>
+            <TableColumn fx:id="colSollZeit" text="Sollzeit (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colIstZeit" text="Istzeit (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colSaldo" text="Saldo (h:mm)" prefWidth="120"/>
+            <TableColumn fx:id="colNotes" text="Notizen" prefWidth="150"/>
+
         </columns>
     </TableView>
 

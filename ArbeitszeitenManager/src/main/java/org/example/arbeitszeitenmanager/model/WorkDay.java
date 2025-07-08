@@ -7,6 +7,19 @@ public class WorkDay {
     private final ObjectProperty<LocalDate> date = new SimpleObjectProperty<>();
     private final ObjectProperty<LocalTime> start = new SimpleObjectProperty<>();
     private final ObjectProperty<LocalTime> end_time = new SimpleObjectProperty<>();
+    private final StringProperty notes = new SimpleStringProperty();
+
+    public String getNotes() {
+        return notes.get();
+    }
+
+    public void  setNotes(String notes) {
+        this.notes.set(notes);
+    }
+
+    public StringProperty notesProperty() {
+        return notes;
+    }
 
     // dynamisch anpassbar
     private final ObjectProperty<Duration> restzeitHeute = new SimpleObjectProperty<>(Duration.ZERO);
@@ -45,7 +58,7 @@ public class WorkDay {
 
     public Duration getSollZeit() {
         if (date.get().getDayOfWeek() != DayOfWeek.SATURDAY && date.get().getDayOfWeek() != DayOfWeek.SUNDAY) {
-            return Duration.ofMinutes((long)(7.7 * 60)); // 7:42
+            return Duration.ofMinutes(Math.round(8.2 * 60)); // ergibt 492 Minuten = 8h 12min
         } else {
             return Duration.ZERO;
         }
